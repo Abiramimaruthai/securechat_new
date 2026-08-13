@@ -1,0 +1,79 @@
+name: securechat_new
+description: A secure messaging app with dynamic encryption algorithm selection.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  local_auth: ^2.2.0
+  shared_preferences: ^2.2.2
+  cloud_firestore: ^5.4.4
+  firebase_database: ^11.1.4
+  firebase_storage: ^12.3.4
+  firebase_messaging: ^15.1.4
+  supabase_flutter: ^2.9.1
+
+  # Encryption & Security
+  encrypt: ^5.0.3
+  pointycastle: ^3.9.1
+  flutter_secure_storage: ^9.0.0
+  crypto: ^3.0.3
+  convert: ^3.1.1
+  basic_utils: ^5.6.4
+
+  # State Management & Navigation
+  provider: ^6.1.1
+  go_router: ^13.2.0
+
+  # UI & Utilities
+  intl: ^0.19.0
+  uuid: ^4.2.1
+  image_picker: ^1.0.4
+  file_picker: ^8.1.2
+  emoji_picker_flutter: ^4.4.0
+  cached_network_image: ^3.3.0
+  just_audio: ^0.9.36
+  video_player: ^2.9.2
+  record: ^6.1.1
+  path_provider: ^2.1.1
+  flutter_local_notifications: ^17.1.0
+
+  # Development Tools
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#1A1A1A"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+
+flutter_native_splash:
+  color: "#1A1A1A"
+  image: "assets/images/splash_logo.png"
+  android_12:
+    color: "#1A1A1A"
+    image: "assets/images/splash_logo.png"

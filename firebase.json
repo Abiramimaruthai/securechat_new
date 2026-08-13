@@ -1,0 +1,27 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "chat-3cbb1",
+          "appId": "1:211499768747:android:c811d011fec1307fd790ee",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "chat-3cbb1",
+          "configurations": {
+            "android": "1:211499768747:android:c811d011fec1307fd790ee"
+          }
+        }
+      }
+    }
+  }
+}

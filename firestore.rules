@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function userDoc(userId) {
+      return get(/databases/$(database)/documents/users/$(userId));
+    }
+
+    function userExists(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId));
+    }
+
+    function userData(userId) {
+      return userDoc(userId).data;
+    }
+
+    function isParticipant(chatId) {
+      return signedIn()
+        && ('participants' in resource.data)
+        && request.auth.uid in resource.data.participants;
+    }
+
+    function isParticipantAfterWrite() {
+      return signedIn()
+        && request.auth.uid in request.resource.data.participants;
+    }
+
+    function isBlocked(userId, targetId) {
+      return userExists(userId)
+        && ('blockedUsers' in userData(userId))
+        && targetId in userData(userId).blockedUsers;
+    }
+
+    function notBlockedBetween(a, b) {
+      return !isBlocked(a, b) && !isBlocked(b, a);
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn();
+      allow create: if isSelf(userId);
+      allow update: if isSelf(userId);
+      allow delete: if false;
+    }
+
+    match /chat_requests/{requestId} {
+      allow read: if signedIn()
+        && (resource.data.fromUserId == request.auth.uid
+          || resource.data.toUserId == request.auth.uid);
+
+      allow create, update: if signedIn()
+        && request.resource.data.fromUserId is string
+        && request.resource.data.toUserId is string
+        && request.resource.data.fromUserId != request.resource.data.toUserId
+        && (
+          request.resource.data.fromUserId == request.auth.uid
+          || request.resource.data.toUserId == request.auth.uid
+        )
+        && notBlockedBetween(
+          request.resource.data.fromUserId,
+          request.resource.data.toUserId
+        );
+
+      allow delete: if false;
+    }
+
+    match /chats/{chatId} {
+      allow read: if isParticipant(chatId);
+
+      allow create: if isParticipantAfterWrite()
+        && request.resource.data.participants.size() == 2
+        && request.resource.data.participants[0] != request.resource.data.participants[1];
+
+      allow update: if isParticipant(chatId)
+        || isParticipantAfterWrite();
+      allow delete: if isParticipant(chatId);
+
+      match /messages/{messageId} {
+        allow read: if isParticipant(chatId)
+          || resource.data.senderId == request.auth.uid
+          || resource.data.receiverId == request.auth.uid;
+
+        allow create: if signedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.receiverId is string
+          && request.resource.data.receiverId != request.auth.uid
+          && notBlockedBetween(request.auth.uid, request.resource.data.receiverId);
+
+        allow update, delete: if signedIn()
+          && (
+            resource.data.senderId == request.auth.uid
+            || resource.data.receiverId == request.auth.uid
+          );
+      }
+    }
+  }
+}
